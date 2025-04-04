@@ -3,7 +3,7 @@ import * as github from "@pulumi/github"; // GitHub Pulumi SDK
 import * as kubernetes from "@pulumi/kubernetes"; // Kubernetes Pulumi SDK
 
 import { cluster } from "./eks"; // EKS cluster resource from a local module
-import { awsProfile, githubOwner, region } from "./variables"; // Configuration variables
+import { githubOwner, region } from "./variables"; // Configuration variables
 
 // Configure the AWS provider
 export const awsProvider = new aws.Provider("aws", {
