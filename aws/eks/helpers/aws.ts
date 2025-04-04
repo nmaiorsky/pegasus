@@ -14,36 +14,41 @@ export function createIRSARole(
   namespace: string,
   awsPolicies: string[] = [],
   customPolicies: CustomPolicy[] = []
-): pulumi.Output<string> { 
+): pulumi.Output<string> {
   const irsaRoleName = `${service}-sa`;
+
+  const assumeRolePolicy = cluster.core.oidcProvider?.apply(provider => {
+    if (!provider) {
+      throw new Error("OIDC provider is undefined. Make sure the cluster is configured correctly.");
+    }
+
+    return JSON.stringify({
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Action: "sts:AssumeRoleWithWebIdentity",
+          Effect: "Allow",
+          Principal: {
+            Federated: provider.arn,
+          },
+          Condition: {
+            StringEquals: {
+              [`${provider.url}:aud`]: "sts.amazonaws.com",
+              [`${provider.url}:sub`]: `system:serviceaccount:${namespace}:${irsaRoleName}`,
+            },
+          },
+        },
+      ],
+    });
+  });
+
+  if (!assumeRolePolicy) {
+    throw new Error("Failed to create assumeRolePolicy. Ensure the OIDC provider is configured correctly.");
+  }
 
   const irsaRole = new aws.iam.Role(`role-irsa-${service}`, {
     name: irsaRoleName,
-    assumeRolePolicy: pulumi
-      .all([
-        cluster.core.oidcProvider?.arn,
-        cluster.core.oidcProvider?.url,
-      ])
-      .apply(([arn, url]) =>
-        JSON.stringify({
-          Version: "2012-10-17",
-          Statement: [
-            {
-              Action: "sts:AssumeRoleWithWebIdentity",
-              Effect: "Allow",
-              Principal: {
-                Federated: arn,
-              },
-              Condition: {
-                StringEquals: {
-                  [`${url}:aud`]: "sts.amazonaws.com",
-                  [`${url}:sub`]: `system:serviceaccount:${namespace}:${irsaRoleName}`,
-                },
-              },
-            },
-          ],
-        })
-      ),
+    assumeRolePolicy,
     tags: {
       ...tags,
       cluster: eksClusterName,
@@ -54,7 +59,6 @@ export function createIRSARole(
     dependsOn: [cluster],
   });
 
-  // Attach AWS policies
   awsPolicies.forEach((policy, index) => {
     new aws.iam.RolePolicyAttachment(`policy-${service}-attachment-${index}`, {
       role: irsaRole.name,
@@ -62,7 +66,6 @@ export function createIRSARole(
     });
   });
 
-  // Attach custom policies
   if (customPolicies.length > 0) {
     new aws.iam.RolePolicy(`policy-attachment-${service}-custom-policy`, {
       role: irsaRole.name,
@@ -77,5 +80,5 @@ export function createIRSARole(
     });
   }
 
-  return irsaRole.arn; // Return the role's ARN as a pulumi.Output
+  return irsaRole.arn;
 }
