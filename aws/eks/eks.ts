@@ -37,7 +37,6 @@ export const instanceRoles = createRoles(
 // Create an EKS cluster with custom configurations
 export const cluster = new eks.Cluster(`${eksClusterName}-cluster`, {
   createOidcProvider: true, // Enable OIDC provider for IAM roles for service accounts (IRSA)
-  deployDashboard: false, // Disable the Kubernetes dashboard deployment
   enabledClusterLogTypes: [
     "api",
     "audit",
