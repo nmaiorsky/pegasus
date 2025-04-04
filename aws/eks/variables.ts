@@ -3,7 +3,7 @@ export const accountId = "783634644742";
 export const environment = "dev";
 
 // AWS General Configuration
-export const region = "us-west-2";
+export const region = "us-east-1";
 export const awsProfile = "default";
 export const tags = {
   Environment: environment,
