@@ -1,9 +1,9 @@
-name: aws
+name: eks
+description: EKS for training
 runtime:
   name: nodejs
   options:
     packagemanager: npm
-description: A minimal AWS TypeScript Pulumi program
 config:
   pulumi:tags:
     value:
