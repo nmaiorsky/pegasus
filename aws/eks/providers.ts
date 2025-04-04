@@ -7,7 +7,6 @@ import { awsProfile, githubOwner, region } from "./variables"; // Configuration 
 
 // Configure the AWS provider
 export const awsProvider = new aws.Provider("aws", {
-  profile: awsProfile, // AWS profile for resource management
   region: region, // AWS region for resource deployment
 });
 

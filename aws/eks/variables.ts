@@ -4,7 +4,6 @@ export const environment = "dev";
 
 // AWS General Configuration
 export const region = "us-east-1";
-export const awsProfile = "default";
 export const tags = {
   Environment: environment,
   ManagedBy: "Pulumi",
