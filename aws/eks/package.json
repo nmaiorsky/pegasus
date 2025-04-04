@@ -2,13 +2,13 @@
     "name": "eks",
     "main": "index.ts",
     "devDependencies": {
-        "@types/node": "^18",
-        "typescript": "^5.0.0"
+        "@types/node": "^22",
+        "typescript": "^5.8.2"
     },
     "dependencies": {
-        "@pulumi/aws": "^6.0.0",
-        "@pulumi/awsx": "^2.0.2",
+        "@pulumi/aws": "^6.75.0",
+        "@pulumi/awsx": "^2.21.1",
         "@pulumi/eks": "^3.8.1",
-        "@pulumi/pulumi": "^3.113.0"
+        "@pulumi/pulumi": "^3.160.0"
     }
 }
