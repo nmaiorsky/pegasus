@@ -9,6 +9,7 @@
         "@pulumi/aws": "^6.75.0",
         "@pulumi/awsx": "^2.21.1",
         "@pulumi/eks": "^3.8.1",
+        "@pulumi/github": "^6.7.0",
         "@pulumi/pulumi": "^3.160.0"
     }
 }
