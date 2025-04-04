@@ -7,7 +7,7 @@ import { githubOwner, region } from "./variables"; // Configuration variables
 
 // Configure the AWS provider
 export const awsProvider = new aws.Provider("aws", {
-  region: "us-east-1", // AWS region for resource deployment
+  region: region, // AWS region for resource deployment
 });
 
 // Configure the GitHub provider
