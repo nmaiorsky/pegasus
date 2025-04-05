@@ -1,5 +1,6 @@
 // DevOps General Configuration
 export const accountId = "783634644742";
+export const awsPulumiRoleName = "PulumiAccess";
 export const environment = "dev";
 
 // AWS General Configuration
