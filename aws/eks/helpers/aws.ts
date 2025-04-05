@@ -18,12 +18,12 @@ export function createIRSARole(
 ): pulumi.Output<string> {
   const irsaRoleName = `${service}-sa`;
 
-  const assumeRolePolicy = cluster.core.oidcProvider?.apply(provider => {
-    if (!provider) {
-      throw new Error("OIDC provider is undefined. Make sure the cluster is configured correctly.");
+  return cluster.core.oidcProvider!.apply(provider => {
+    if (!provider || !provider.arn || !provider.url) {
+      throw new Error("OIDC provider is undefined or incomplete. Make sure the cluster is configured correctly.");
     }
 
-    return JSON.stringify({
+    const assumeRolePolicy = JSON.stringify({
       Version: "2012-10-17",
       Statement: [
         {
@@ -41,50 +41,46 @@ export function createIRSARole(
         },
       ],
     });
-  });
 
-  if (!assumeRolePolicy) {
-    throw new Error("Failed to create assumeRolePolicy. Ensure the OIDC provider is configured correctly.");
-  }
-
-  const irsaRole = new aws.iam.Role(`role-irsa-${service}`, {
-    name: irsaRoleName,
-    assumeRolePolicy,
-    tags: {
-      ...tags,
-      cluster: eksClusterName,
-      service,
-      namespace,
-    },
-  }, {
-    dependsOn: [cluster],
-    provider: awsProvider,
-  });
-
-  awsPolicies.forEach((policy, index) => {
-    new aws.iam.RolePolicyAttachment(`policy-${service}-attachment-${index}`, {
-      role: irsaRole.name,
-      policyArn: policy,
+    const irsaRole = new aws.iam.Role(`role-irsa-${service}`, {
+      name: irsaRoleName,
+      assumeRolePolicy,
+      tags: {
+        ...tags,
+        cluster: eksClusterName,
+        service,
+        namespace,
+      },
     }, {
+      dependsOn: [cluster],
       provider: awsProvider,
     });
-  });
 
-  if (customPolicies.length > 0) {
-    new aws.iam.RolePolicy(`policy-attachment-${service}-custom-policy`, {
-      role: irsaRole.name,
-      policy: JSON.stringify({
-        Version: "2012-10-17",
-        Statement: customPolicies.map(customPolicy => ({
-          Effect: "Allow",
-          Action: customPolicy.actions,
-          Resource: customPolicy.resources,
-        })),
-      }),
-    }, {
-      provider: awsProvider,
+    awsPolicies.forEach((policy, index) => {
+      new aws.iam.RolePolicyAttachment(`policy-${service}-attachment-${index}`, {
+        role: irsaRole.name,
+        policyArn: policy,
+      }, {
+        provider: awsProvider,
+      });
     });
-  }
 
-  return irsaRole.arn;
+    if (customPolicies.length > 0) {
+      new aws.iam.RolePolicy(`policy-attachment-${service}-custom-policy`, {
+        role: irsaRole.name,
+        policy: JSON.stringify({
+          Version: "2012-10-17",
+          Statement: customPolicies.map(customPolicy => ({
+            Effect: "Allow",
+            Action: customPolicy.actions,
+            Resource: customPolicy.resources,
+          })),
+        }),
+      }, {
+        provider: awsProvider,
+      });
+    }
+
+    return irsaRole.arn;
+  });
 }
