@@ -10,6 +10,11 @@ export type CustomPolicy = {
   resources: string[];
 };
 
+console.log("Creating IRSA role...");
+cluster.core.oidcProvider?.apply(provider => console.log(provider?.url));
+cluster.core.oidcProvider?.apply(provider => console.log(provider?.arn));
+console.log("IRSA role created.");
+
 export function createIRSARole(
   service: string,
   namespace: string,
