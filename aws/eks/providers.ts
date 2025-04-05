@@ -1,19 +1,21 @@
 import * as aws from "@pulumi/aws"; // AWS Pulumi SDK
 import * as github from "@pulumi/github"; // GitHub Pulumi SDK
 import * as kubernetes from "@pulumi/kubernetes"; // Kubernetes Pulumi SDK
+import * as pulumi from "@pulumi/pulumi"; // Pulumi core SDK
+
 
 import { cluster } from "./eks"; // EKS cluster resource from a local module
 import { githubOwner, region } from "./variables"; // Configuration variables
 
-// Configure the AWS provider
-export const awsProvider = new aws.Provider("aws", {
-  region: region, // The region should be a variable or string, like 'us-west-2'
-});
+// Ensure the GITHUB_TOKEN is defined
+const githubToken = process.env.GITHUB_TOKEN
+    ? pulumi.secret(process.env.GITHUB_TOKEN)
+    : (() => { throw new Error("GITHUB_TOKEN is not set"); })();
 
-// Configure the GitHub provider
+// Create the GitHub provider with the secret token
 export const githubProvider = new github.Provider("github", {
-  token: process.env.GITHUB_TOKEN, // GitHub token for authentication
-  owner: githubOwner, // GitHub organization or user
+  token: githubToken, // GitHub token for authentication as a secret
+  owner: githubOwner,  // GitHub organization or user
 });
 
 // Configure the Kubernetes provider using the EKS cluster's kubeconfig
