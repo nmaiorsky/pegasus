@@ -10,33 +10,6 @@ export const instanceRoles = createRoles(
   3 // Create 3 instance roles for the EKS node group
 );
 
-// Define the policy document for EC2 volume management
-const ec2CreateVolumePolicyDocument = {
-  Version: "2012-10-17",
-  Statement: [
-    {
-      Effect: "Allow",
-      Action: [
-        "ec2:AttachVolume",
-        "ec2:CreateTags",
-        "ec2:CreateVolume",
-        "ec2:DetachVolume",
-        "ec2:DeleteVolume",
-      ],
-      Resource: "*",
-    },
-  ],
-};
-
-// Create the IAM policy for EC2 volume management
-const ec2CreateVolumePolicy = new aws.iam.Policy("ec2CreateVolumePolicy", {
-  description: "Policy to allow EC2 CreateVolume action",
-  name: "EC2CreateVolumePolicy",
-  policy: JSON.stringify(ec2CreateVolumePolicyDocument),
-}, {
-    provider: awsProvider,
-});
-
 // Creates an IAM role and attaches the specified managed policies
 export function createRole(name: string): aws.iam.Role {
   // Define the IAM Role with the 'ec2.amazonaws.com' service principal
@@ -46,6 +19,33 @@ export function createRole(name: string): aws.iam.Role {
     }),
   }, {
     provider: awsProvider,
+  });
+
+  // Define the policy document for EC2 volume management
+  const ec2CreateVolumePolicyDocument = {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Effect: "Allow",
+        Action: [
+          "ec2:AttachVolume",
+          "ec2:CreateTags",
+          "ec2:CreateVolume",
+          "ec2:DetachVolume",
+          "ec2:DeleteVolume",
+        ],
+        Resource: "*",
+      },
+    ],
+  };
+  
+  // Create the IAM policy for EC2 volume management
+  const ec2CreateVolumePolicy = new aws.iam.Policy("ec2CreateVolumePolicy", {
+    description: "Policy to allow EC2 CreateVolume action",
+    name: "EC2CreateVolumePolicy",
+    policy: JSON.stringify(ec2CreateVolumePolicyDocument),
+  }, {
+      provider: awsProvider,
   });
 
   const managedPolicyArns: string[] = [
