@@ -2,7 +2,6 @@ import * as aws from "@pulumi/aws";
 import * as random from "@pulumi/random";
 
 import { cluster } from "../eks";
-import { awsProvider } from "../providers";
 import { eksClusterName, region, tags } from "../variables";
 import { createIRSARole } from "../helpers/aws";
 import { uploadValueFile } from "../helpers/git";
@@ -30,8 +29,6 @@ const grafanaAdminSecret = new aws.secretsmanager.Secret("grafana-secret", {
     cluster: cluster.eksCluster.name, // Tag with EKS cluster name
     environment: tags.Environment, // Tag with environment name
   },
-}, {
-  provider: awsProvider, // Use AWS provider
 });
 
 // Create a new version of the secret with the Grafana credentials
@@ -40,8 +37,6 @@ new aws.secretsmanager.SecretVersion("grafana-secret-version", {
   secretString: grafanaAdminPassword.result.apply((password: string) => 
     JSON.stringify({ password, username: "admin" }) // Store password and admin username
   ),
-}, {
-  provider: awsProvider, // AWS provider configuration
 });
 
 createIRSARole(
