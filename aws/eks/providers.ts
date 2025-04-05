@@ -6,7 +6,7 @@ import { cluster } from "./eks"; // EKS cluster resource from a local module
 import { githubOwner, region } from "./variables"; // Configuration variables
 
 // Configure the AWS provider
-export const awsProvider = new aws.Provider("aws", {
+new aws.Provider("aws", {
   region: region, // AWS region for resource deployment
 });
 
