@@ -7,6 +7,8 @@ import * as pulumi from "@pulumi/pulumi"; // Pulumi core SDK
 import { cluster } from "./eks"; // EKS cluster resource from a local module
 import { githubOwner, region } from "./variables"; // Configuration variables
 
+export const awsProvider = new aws.Provider("aws", {});
+
 // Ensure the GITHUB_TOKEN is defined
 const githubToken = process.env.GITHUB_TOKEN
     ? pulumi.secret(process.env.GITHUB_TOKEN)
