@@ -6,15 +6,9 @@ import { cluster } from "./eks"; // EKS cluster resource from a local module
 import { accountId, awsPulumiRoleName, githubOwner, region } from "./variables"; // Configuration variables
 
 // Configure the AWS provider
-const awsProvider = new aws.Provider("aws", {
-  region: region, // The region should be a variable or string, like 'us-west-2'
-  assumeRole: {
-      roleArn: `arn:aws:iam::${accountId}:role/${awsPulumiRoleName}`, // Replace with your role ARN
-      sessionName: "Pulumi", // Customize session name
-  },
-  // OIDC configuration (this assumes you're using Pulumi's automatic OIDC setup)
-  profile: "pulumi", // If using Pulumi's default profile for authentication
-});
+// const awsProvider = new aws.Provider("aws", {
+//   region: region, // The region should be a variable or string, like 'us-west-2'
+// });
 
 // Configure the GitHub provider
 export const githubProvider = new github.Provider("github", {
