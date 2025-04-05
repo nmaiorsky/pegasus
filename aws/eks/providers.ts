@@ -3,12 +3,12 @@ import * as github from "@pulumi/github"; // GitHub Pulumi SDK
 import * as kubernetes from "@pulumi/kubernetes"; // Kubernetes Pulumi SDK
 
 import { cluster } from "./eks"; // EKS cluster resource from a local module
-import { accountId, awsPulumiRoleName, githubOwner, region } from "./variables"; // Configuration variables
+import { githubOwner, region } from "./variables"; // Configuration variables
 
 // Configure the AWS provider
-// const awsProvider = new aws.Provider("aws", {
-//   region: region, // The region should be a variable or string, like 'us-west-2'
-// });
+export const awsProvider = new aws.Provider("aws", {
+  region: region, // The region should be a variable or string, like 'us-west-2'
+});
 
 // Configure the GitHub provider
 export const githubProvider = new github.Provider("github", {

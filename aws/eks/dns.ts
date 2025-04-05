@@ -1,5 +1,7 @@
 import * as aws from "@pulumi/aws"; // Import AWS resources from Pulumi
+
 import { eksVpc } from "./eks"; // Import VPC details from the EKS module
+import { awsProvider } from "./providers"; // Import AWS provider configuration
 import { dnsPrivateDomain, dnsPublicDomain, region, tags } from "./variables"; // Import necessary variables
 
 // Create a private Route 53 DNS zone for internal domain resolution
@@ -13,6 +15,8 @@ const privateZone = new aws.route53.Zone(
         vpcRegion: region, // Region of the VPC
       },
     ],
+  }, {
+    provider: awsProvider,
   }
 );
 
@@ -27,6 +31,8 @@ const publicZone = new aws.route53.Zone(
         vpcRegion: region, // Region of the VPC
       },
     ],
+  }, {
+    provider: awsProvider,
   }
 );
 
@@ -38,6 +44,8 @@ export const wildcardCertificate = new aws.acm.Certificate(
     validationMethod: "DNS", // DNS-based validation
     subjectAlternativeNames: [dnsPrivateDomain], // Optional SAN
     tags, // Tags for the certificate
+  }, {
+    provider: awsProvider,
   }
 );
 

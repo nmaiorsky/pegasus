@@ -2,6 +2,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import { cluster } from "../eks";
+import { awsProvider } from "../providers";
 import { eksClusterName, tags } from "../variables";
 
 export type CustomPolicy = {
@@ -57,12 +58,15 @@ export function createIRSARole(
     },
   }, {
     dependsOn: [cluster],
+    provider: awsProvider,
   });
 
   awsPolicies.forEach((policy, index) => {
     new aws.iam.RolePolicyAttachment(`policy-${service}-attachment-${index}`, {
       role: irsaRole.name,
       policyArn: policy,
+    }, {
+      provider: awsProvider,
     });
   });
 
@@ -77,6 +81,8 @@ export function createIRSARole(
           Resource: customPolicy.resources,
         })),
       }),
+    }, {
+      provider: awsProvider,
     });
   }
 

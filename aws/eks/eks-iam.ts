@@ -1,5 +1,6 @@
 import * as aws from "@pulumi/aws"; // Import AWS resources from Pulumi
 
+import { awsProvider } from "./providers"; // Import AWS provider configuration
 import { accountId } from "./variables"; // Import the AWS account ID from the variables file
 
 // Define the policy document for EC2 volume management
@@ -25,6 +26,8 @@ const ec2CreateVolumePolicy = new aws.iam.Policy("ec2CreateVolumePolicy", {
   description: "Policy to allow EC2 CreateVolume action",
   name: "EC2CreateVolumePolicy",
   policy: JSON.stringify(ec2CreateVolumePolicyDocument),
+}, {
+    provider: awsProvider,
 });
 
 // List of managed IAM policies to attach to the EKS worker node role
@@ -43,6 +46,8 @@ export function createRole(name: string): aws.iam.Role {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({
       Service: "ec2.amazonaws.com",
     }),
+  }, {
+    provider: awsProvider,
   });
 
   // Attach each managed policy to the role
@@ -55,6 +60,7 @@ export function createRole(name: string): aws.iam.Role {
       },
       {
         dependsOn: ec2CreateVolumePolicy,
+        provider: awsProvider,
       }
     );
   });
@@ -75,6 +81,8 @@ export function createInstanceProfiles(
   return roles.map((role, index) =>
     new aws.iam.InstanceProfile(`${name}-instanceProfile-${index}`, {
       role: role,
+    }, {
+      provider: awsProvider,
     })
   );
 }

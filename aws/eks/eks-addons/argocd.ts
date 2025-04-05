@@ -4,7 +4,7 @@ import * as kubernetes from "@pulumi/kubernetes"; // Import Kubernetes-related r
 import * as random from "@pulumi/random"; // Import random generation utilities from Pulumi
 import * as tls from "@pulumi/tls"; // Import TLS-related resources from Pulumi
 
-import { githubProvider, k8sProvider } from "../providers"; // Import provider configurations
+import { awsProvider, githubProvider, k8sProvider } from "../providers"; // Import provider configurations
 import {
   argoCdAppsVersion,
   argoCdVersion,
@@ -64,6 +64,8 @@ const secret = new aws.secretsmanager.Secret(
     description: "ArgoCD admin credentials", // Secret description
     recoveryWindowInDays: 0, // No recovery window for secret deletion
     tags: tags, // Add predefined tags to the secret
+  }, {
+    provider: awsProvider,
   }
 );
 
@@ -75,6 +77,8 @@ new aws.secretsmanager.SecretVersion(
     secretString: argoAdminPassword.result.apply((password) =>
       JSON.stringify({ password, username: "admin" }) // Store password and admin username
     ),
+  }, {
+    provider: awsProvider,
   }
 );
 
