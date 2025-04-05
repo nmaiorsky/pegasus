@@ -13,14 +13,12 @@ export type CustomPolicy = {
 export function createIRSARole(
   service: string,
   namespace: string,
-  oidcIssuer: pulumi.Input<string>,
-  oidcProviderArn: pulumi.Input<string>,
   awsPolicies: string[] = [],
   customPolicies: CustomPolicy[] = []
 ): pulumi.Output<string> {
   const irsaRoleName = `${service}-sa`;
 
-  const assumeRolePolicy = pulumi.all([oidcIssuer, oidcProviderArn]).apply(([issuer, providerArn]) =>
+  const assumeRolePolicy = pulumi.all([cluster.oidcIssuer, cluster.oidcProviderArn]).apply(([issuer, providerArn]) =>
     JSON.stringify({
       Version: "2012-10-17",
       Statement: [
